@@ -30,8 +30,10 @@ mail_list_vip = ["1010062249@qq.com", "809465946@qq.com"]
 smtp_mail = "669338120@qq.com"
 # 起始发送邮箱的授权码
 smtp_self = "mtwvnayhbwjnbegi"
-tbxUserID_self = "1221193002"
-InputPwd_self = "Qcyg8008208820"
+# tbxUserID_self = "1221193002"
+# InputPwd_self = "Qcyg8008208820"
+tbxUserID_self = "5221139012"
+InputPwd_self = "Kang.123"
 
 
 # 邮件发送函数
@@ -67,7 +69,8 @@ def send_qqEmail(to, code):
 
 
 mysql_db_name = "consumer_test"
-mysql_db_chart_name = 'test_org'
+mysql_db_chart_name="test_org"
+mysql_db_chart_name2 = "test_lessons"
 conn = Connection(
     host='localhost',  # 主机名(ip)
     port=3306,  # 端口
@@ -75,8 +78,22 @@ conn = Connection(
     password='root',  # 密码
     autocommit=True  # 设置自动提交
 )
-
-
+# 该函数负责向数据库添加课程名称和加入的时间
+def mysql_insert(insert_name,time):
+    # 检查连接是否断开，如果断开就进行重连
+    conn.ping(reconnect=True)
+    cursor = conn.cursor()
+    conn.select_db(mysql_db_name)
+    # print(f"{time_naw.hour},{time_naw.minute},{time_naw.second}")
+    # print(time_naw)
+    print(f"名字为：{insert_name}，时间为：{time}")
+    cursor.execute(
+        # 改写法可适用于正常插入时，若数据库中已有存此项数据信息，则对需要修改的项进行更新
+        # f"insert into {mysql_db_chart_name}(consumer,begin_time,end_time,mail) values('{insert_name}','{begin_time}','{end_time}','{mail}') on duplicate key update end_time='{end_time}',mail='{mail}'")
+        f"insert into {mysql_db_chart_name2}(name,time) values('{insert_name}','{time}')"
+    )
+    # print("1")
+    print(f"已添加可报名会议进入数据库，名字为：{insert_name}，时间为：{time}")
 # 该函数最终以列表形式返回数据库中存储的邮件
 def mysql_monitor():
     cursor = conn.cursor()
@@ -90,7 +107,19 @@ def mysql_monitor():
         # print(r[4]+"类型"+str(type(r[4])))
     print(f"当前存储邮箱数目为：{len(email_list)}，已作为群发email地址")
     return email_list
+# 该函数负责返回1或0,1为有重复，2为没有重复
+def mysql_monitor_lessons(name,time):
+    cursor = conn.cursor()
+    conn.select_db(mysql_db_name)
+    cursor.execute(f"select * from {mysql_db_chart_name2}")
 
+    results: tuple = cursor.fetchall()
+    for r in results:
+        if str(name)==str(r[0]) and str(time)==str(r[1]):
+            print(f"此课程已添加过，无需群发邮件通知")
+            return 1
+    print(f"此课程未添加过，需要进行群发邮件通知")
+    return 0
 
 # headers={
 #     "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -119,7 +148,6 @@ safe_line = 4
 # session安全建立次数
 safe_session_line = 2
 
-a = True
 # 判断是否进入发送下班的判断语句
 b = False
 # 爬虫之间时间间隔系数，单位每10分钟
@@ -211,13 +239,16 @@ try:
                         # break
                         print(page)
                         n = 1
+
                         for i in page:
-                            if re.search("报名", i) is not None:
+
+                            if  re.search("报名", i) is not None:
+                                n-=1
                                 # print("1111111111111")
                                 # 可报名会议的开会名称，类型为列表，只有一个元素
                                 context_name = soup.xpath(
                                     f"/html/body/form/div[@id='mainframeDiv']/div[@id='divContent']/table[@border='1px']/tr[@onmouseover][{n}]/td[1]/text()")
-                                # print(context_name)
+                                # print(f"{str(context_name[0])}")
                                 # 可报名会议的开会时间，类型为列表，只有一个元素
                                 context_classtime = soup.xpath(
                                     f"/html/body/form/div[@id='mainframeDiv']/div[@id='divContent']/table[@border='1px']/tr[@onmouseover][{n}]/td[2]/text()")
@@ -233,48 +264,69 @@ try:
                                 # 剩余可报名人数
                                 context_people_total = soup.xpath(
                                     f"/html/body/form/div[@id='mainframeDiv']/div[@id='divContent']/table[@border='1px']/tr[@onmouseover][{n}]/td[8]/text()")
+                                # print(context_people_total[0])
                                 context_people_now = soup.xpath(
                                     f"/html/body/form/div[@id='mainframeDiv']/div[@id='divContent']/table[@border='1px']/tr[@onmouseover][{n}]/td[9]/text()")
-                                context_people=context_people_total-context_people_now
+                                # print(context_people_now[0])
+                                context_people=int(context_people_total[0])-int(context_people_now[0])
+                                # print(context_people)
+                                # print(f"{context_people[0]}")
                                 # 可报名会议的开会其他说明（比如限定学院优先），类型为列表，只有一个元素
                                 context_ortherins = soup.xpath(
                                     f"/html/body/form/div[@id='mainframeDiv']/div[@id='divContent']/table[@border='1px']/tr[@onmouseover][{n}]/td[10]/text()")
-                                try:
+                                # print(f"{str(context_ortherins[0])}")
+                                # print(f"野生会议已出现!!!\n名字为：{str(context_name[0])}")
+                                is_notice=mysql_monitor_lessons(str(context_name[0]),str(context_classtime[0]))
+                                if is_notice==0:
+                                    mysql_insert(str(context_name[0]),str(context_classtime[0]))
+                                    print(n)
                                     try:
-                                        send_qqEmail(mail_list_vip,
-                                                     f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余报名人数为：{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+                                        try:
+                                            send_qqEmail(mail_list_vip,
+                                                         f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
 
-                                        send_qqEmail(mysql_monitor(),
-                                                     f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余报名人数为：{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+                                            send_qqEmail(mysql_monitor(),
+                                                         f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
 
+                                        except Exception:
+                                            send_qqEmail(mail_list_vip,
+                                                         f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+
+                                            send_qqEmail(mysql_monitor(),
+                                                         f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+                                            # print(n)
                                     except Exception:
-                                        send_qqEmail(mail_list_vip,
-                                                     f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余报名人数为：{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+                                        send_qqEmail(qq_mail, f"野生会议已出现,快枪!!! ")
+                                        if context_grade[0] > 0.1:
+                                            send_qqEmail(mysql_monitor(),
+                                                         f"野生会议已出现但其学分属性较高!!!\n名字为：{context_name[0]} ")
+                                            # print(n)
+                                        else:
+                                            send_qqEmail(mysql_monitor(), f"野生会议已出现!!!\n名字为：{context_name[0]} ")
+                                            # print(n)
+                                    finally:
+                                        print("已检测到会议")
 
-                                        send_qqEmail(mysql_monitor(),
-                                                     f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余报名人数为：{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
-                                        # print(n)
-                                except Exception:
-                                    send_qqEmail(qq_mail, f"野生会议已出现,快枪!!! ")
-                                    if context_grade[0] > 0.1:
-                                        send_qqEmail(mysql_monitor(),
-                                                     f"野生会议已出现但其学分属性较高!!!\n名字为：{context_name[0]} ")
-                                        # print(n)
-                                    else:
-                                        send_qqEmail(mysql_monitor(), f"野生会议已出现!!!\n名字为：{context_name[0]} ")
-                                        # print(n)
-                                finally:
-                                    print("已检测到会议")
-                                    print(f"野生会议已出现!!!\n名字为：{context_name[0]}\n剩余报名人数为：{context_people}")
-                                    # print(n)
-                                    sleep(900)
-                                break
-                                # 测试代码，可将上面发邮件的全注释掉解开下面的注释
-                                # try:
-                                #     print(f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余报名人数为：{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
-                                # finally:
-                                #     print("查到会议")
-                            n += 1
+
+
+                                    # 测试代码，可将上面发邮件的全注释掉解开下面的注释
+                                    # try:
+                                    #     print(
+                                    #         f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余报名人数为：{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+                                    #     send_qqEmail(qq_mail,
+                                    #                  f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+                                    #
+                                    # finally:
+                                    #     print("查到会议")
+
+
+
+
+
+                                elif is_notice==1:
+                                    print("无需进行添加")
+
+                            n+=1
                         # 当前时间的时和分，类型为datetime
                         current_time = datetime.now().time()
                         rel_time = time(current_time.hour, current_time.minute)
