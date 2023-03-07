@@ -242,7 +242,7 @@ try:
                         n = 1
 
                         for i in page:
-
+                            print(f"n为：{n},i为:{i}")
                             if  re.search("报名", i) is not None:
                                 # 正常情况i值为详细信息，并与n一一对应，但当有可报名会议时，报名也占一个位数，因此要减一
                                 if(n>1):
@@ -329,7 +329,7 @@ try:
                         current_time = datetime.now().time()
                         rel_time = time(current_time.hour, current_time.minute)
                         if DAY_START <= rel_time <= DAY_END or DAY_START1 <= rel_time <= DAY_END1:
-                            print("正在搜索中")
+                            print("搜索冷却cd中")
                             # 程序每次爬取的时间间隔
                             sleep(600)
                             rep = session.get(url3).content.decode('utf-8')
