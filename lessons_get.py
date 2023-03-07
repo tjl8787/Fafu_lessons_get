@@ -238,12 +238,15 @@ try:
                         #              f"野生会议已出现!!!\n名字为：{context_name[0]} \n会议开始时间为:{context_classtime[0]} \n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
                         # break
                         print(page)
+                        # 此变量负责学术报名表格行号，第一个学术会议序号从1开始
                         n = 1
 
                         for i in page:
 
                             if  re.search("报名", i) is not None:
-                                n-=1
+                                # 正常情况i值为详细信息，并与n一一对应，但当有可报名会议时，报名也占一个位数，因此要减一
+                                if(n>1):
+                                    n-=1
                                 # print("1111111111111")
                                 # 可报名会议的开会名称，类型为列表，只有一个元素
                                 context_name = soup.xpath(
@@ -307,8 +310,6 @@ try:
                                     finally:
                                         print("已检测到会议")
 
-
-
                                     # 测试代码，可将上面发邮件的全注释掉解开下面的注释
                                     # try:
                                     #     print(
@@ -319,14 +320,11 @@ try:
                                     # finally:
                                     #     print("查到会议")
 
-
-
-
-
                                 elif is_notice==1:
+                                    print(n)
                                     print("无需进行添加")
-
-                            n+=1
+                            if(n<10):
+                                n+=1
                         # 当前时间的时和分，类型为datetime
                         current_time = datetime.now().time()
                         rel_time = time(current_time.hour, current_time.minute)
