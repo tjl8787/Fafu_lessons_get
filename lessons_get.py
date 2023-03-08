@@ -306,42 +306,42 @@ try:
                                     # mysql_insert(str(context_name[0]),str(context_classtime[0]))
                                     mysql_insert_update(str(context_name[0]),str(context_classtime[0]),str(context_location[0]))
                                     print(n)
-                                    # try:
-                                    #     try:
-                                    #         send_qqEmail(mail_list_vip,
-                                    #                      f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
-                                    #
-                                    #         send_qqEmail(mysql_monitor(),
-                                    #                      f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
-                                    #
-                                    #     except Exception:
-                                    #         send_qqEmail(mail_list_vip,
-                                    #                      f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
-                                    #
-                                    #         send_qqEmail(mysql_monitor(),
-                                    #                      f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
-                                    #         # print(n)
-                                    # except Exception:
-                                    #     send_qqEmail(qq_mail, f"野生会议已出现,快枪!!! ")
-                                    #     if context_grade[0] > 0.1:
-                                    #         send_qqEmail(mysql_monitor(),
-                                    #                      f"野生会议已出现但其学分属性较高!!!\n名字为：{context_name[0]} ")
-                                    #         # print(n)
-                                    #     else:
-                                    #         send_qqEmail(mysql_monitor(), f"野生会议已出现!!!\n名字为：{context_name[0]} ")
-                                    #         # print(n)
-                                    # finally:
-                                    #     print("已检测到会议")
+                                    try:
+                                        try:
+                                            send_qqEmail(mail_list_vip,
+                                                         f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+
+                                            send_qqEmail(mysql_monitor(),
+                                                         f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+
+                                        except Exception:
+                                            send_qqEmail(mail_list_vip,
+                                                         f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+
+                                            send_qqEmail(mysql_monitor(),
+                                                         f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+                                            # print(n)
+                                    except Exception:
+                                        send_qqEmail(qq_mail, f"野生会议已出现,快枪!!! ")
+                                        if context_grade[0] > 0.1:
+                                            send_qqEmail(mysql_monitor(),
+                                                         f"野生会议已出现但其学分属性较高!!!\n名字为：{context_name[0]} ")
+                                            # print(n)
+                                        else:
+                                            send_qqEmail(mysql_monitor(), f"野生会议已出现!!!\n名字为：{context_name[0]} ")
+                                            # print(n)
+                                    finally:
+                                        print("已检测到会议")
 
                                     # 测试代码，可将上面发邮件的全注释掉解开下面的注释
-                                    try:
-                                        print(
-                                            f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余报名人数为：{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
-                                        send_qqEmail(qq_mail,
-                                                     f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
-
-                                    finally:
-                                        print("查到会议")
+                                    # try:
+                                    #     print(
+                                    #         f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余报名人数为：{context_people}\n其他说明为:{context_ortherins[0]}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+                                    #     send_qqEmail(qq_mail,
+                                    #                  f"野生会议已出现!!!\n名字为：{context_name[0]}\n会议时间为:{context_classtime[0]}\n会议地点为:{context_location[0]}\n会议学分为:{context_grade[0]}\n剩余可报人数为:{context_people}\n请点击链接登入教育管理系统捕获该会议：http://yjsjyglxt.fafu.edu.cn/login.aspx")
+                                    #
+                                    # finally:
+                                    #     print("查到会议")
 
                                 elif is_notice==1:
                                     print(n)
