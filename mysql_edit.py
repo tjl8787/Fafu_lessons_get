@@ -142,7 +142,7 @@ def mysql_insert(insert_name, mail, day_num):
 
 # 该函数可以将到期用户进行删除,并提醒
 def mysql_judge():
-    # 检查连接是否断开，如果断开就进行重连
+    #检查连接是否断开，如果断开就进行重连
     conn.ping(reconnect=True)
     cursor = conn.cursor()
     conn.select_db(mysql_db_name)

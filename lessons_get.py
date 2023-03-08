@@ -94,8 +94,10 @@ def mysql_insert(insert_name,time):
     )
     # print("1")
     print(f"已添加可报名会议进入数据库，名字为：{insert_name}，时间为：{time}")
+
 # 该函数最终以列表形式返回数据库中存储的邮件
 def mysql_monitor():
+    conn.ping(reconnect=True)
     cursor = conn.cursor()
     conn.select_db(mysql_db_name)
     cursor.execute(f"select * from {mysql_db_chart_name}")
@@ -106,9 +108,12 @@ def mysql_monitor():
         email_list.append(list(r)[3])
         # print(r[4]+"类型"+str(type(r[4])))
     print(f"当前存储邮箱数目为：{len(email_list)}，已作为群发email地址")
+    conn.close()
     return email_list
+
 # 该函数负责返回1或0,1为有重复，2为没有重复
 def mysql_monitor_lessons(name,time):
+    conn.ping(reconnect=True)
     cursor = conn.cursor()
     conn.select_db(mysql_db_name)
     cursor.execute(f"select * from {mysql_db_chart_name2}")
@@ -117,8 +122,10 @@ def mysql_monitor_lessons(name,time):
     for r in results:
         if str(name)==str(r[0]) and str(time)==str(r[1]):
             print(f"此课程已添加过，无需群发邮件通知")
+
             return 1
     print(f"此课程未添加过，需要进行群发邮件通知")
+
     return 0
 
 # headers={
@@ -329,6 +336,7 @@ try:
                         current_time = datetime.now().time()
                         rel_time = time(current_time.hour, current_time.minute)
                         if DAY_START <= rel_time <= DAY_END or DAY_START1 <= rel_time <= DAY_END1:
+                            conn.close()
                             print("搜索冷却cd中")
                             # 程序每次爬取的时间间隔
                             sleep(600)
