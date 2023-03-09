@@ -137,7 +137,7 @@ def mysql_insert(insert_name, mail, day_num):
         send_qqEmail(mail,f"您的会议小助手服务已经激活\n服务应用时长：{day_num}天\n起始使用时间：{results[0][1].year}-{results[0][1].month}-{results[0][1].day}\n到期时间：{results[0][2].year}-{results[0][2].month}-{results[0][2].day}\n在此期间小助手会将遇到的所有可报名的野生会议通过邮件方式提醒您关注，若有心仪的会议您可以通过登入学校管理系统自行捕获！")
         print("邮件发送成功")
         # if datetime.now().time()<()
-    conn.close()
+
 
 
 # 该函数可以将到期用户进行删除,并提醒
@@ -161,7 +161,7 @@ def mysql_judge():
                          f"您的会议小助手使用期限已到期\n起始使用时间:{r[1].year}-{r[1].month}-{r[1].day}\n到期时间:{r[2].year}-{r[2].month}-{r[2].day}\n若需续费请联系管理员，期待您的下次使用！")
             cursor.execute(f"delete from {mysql_db_chart_name} where consumer='{r[0]}'")
             print(f"{r[0]}所在相关数据条已删除")
-    conn.close()
+
 
 
 # 该函数可以对即将到期的用户进行提醒
@@ -295,6 +295,8 @@ try:
             mail=input("请输入客户邮箱：")
             day_num=input("请输入客户使用天数：")
             mysql_insert(insert_name,mail,int(day_num))
+            if conn.open:
+                conn.close()
         # elif num==str(2):
         #     # 获取当前时间（时，分，秒，微秒）
         #     current_time = datetime.now().time()
@@ -307,8 +309,11 @@ try:
         #         mysql_judge()
         #         sleep(3600)
         elif num==str(3):
+            if conn.open:
+                conn.close()
             reconfirmation=input("确定退出（Y/N）:")
             if reconfirmation=="Y":
+
                 break
             else:
                 continue
@@ -318,6 +323,8 @@ except Exception:
     send_qqEmail(qq_mail,
                  "数据库操作系统出现问题，程序终止运行，请排查问题原因。")
 finally:
+    if conn.open:
+        conn.close()
     print("程序停止运行")
 
 

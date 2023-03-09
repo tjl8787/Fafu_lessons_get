@@ -90,7 +90,7 @@ def mysql_judge():
                          f"您的会议小助手使用期限已到期\n起始使用时间:{r[1].year}-{r[1].month}-{r[1].day}\n到期时间:{r[2].year}-{r[2].month}-{r[2].day}\n若需续用请联系管理员，期待您的下次使用！")
             cursor.execute(f"delete from {mysql_db_chart_name} where consumer='{r[0]}'")
             print(f"{r[0]}所在相关数据条已删除")
-    conn.close()
+
 
 def mysql_tip():
     conn.ping(reconnect=True)
@@ -125,7 +125,7 @@ def mysql_monitor():
         email_list.append(list(r)[3])
         # print(r[4]+"类型"+str(type(r[4])))
     print(f"触发群发邮件功能，当前存储邮箱数目为：{len(email_list)}，已作为群发email地址")
-    conn.close()
+
     return email_list
 
 def mysql_monitor_lessons_update(name:str, time:str, place:str):
@@ -226,12 +226,15 @@ try:
             crawler()
             mysql_tip()
             mysql_judge()
+            if conn.open:
+                conn.close()
             print(f"开始读取数据库用户，当前时间{rel_time}")
             sleep(3600)
         elif DAY_START2 <= rel_time <= DAY_END2:
             print(f"开始读取数据库用户，当前时间{rel_time}")
             crawler()
-            conn.close()
+            if conn.open:
+                conn.close()
             sleep(3600)
 except Exception:
     send_qqEmail(qq_mail,f"数据库读取出现问题,当前时间{rel_time},请速去查看")

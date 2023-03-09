@@ -353,7 +353,8 @@ try:
                         current_time = datetime.now().time()
                         rel_time = time(current_time.hour, current_time.minute)
                         if DAY_START <= rel_time <= DAY_END or DAY_START1 <= rel_time <= DAY_END1:
-                            conn.close()
+                            if conn.open:
+                                conn.close()
                             print("搜索冷却cd中")
                             # 程序每次爬取的时间间隔
                             sleep(600)
