@@ -87,7 +87,7 @@ def mysql_judge():
         if r[2].year == time_now_org.year and r[2].month == time_now_org.month and r[2].day == time_now_org.day:
             mail=[f'{r[3]}']
             send_qqEmail(mail,
-                         f"您的会议小助手使用期限已到期\n起始使用时间:{r[1].year}-{r[1].month}-{r[1].day}\n到期时间:{r[2].year}-{r[2].month}-{r[2].day}\n若需续用请联系管理员，期待您的下次使用！")
+                         f"您的会议小助手使用期限已到期\n起始使用时间:{r[1].year}-{r[1].month}-{r[1].day}\n到期时间:{r[2].year}-{r[2].month}-{r[2].day}\n若需续用请联系管理员,QQ:1010062249，期待您的下次使用！")
             cursor.execute(f"delete from {mysql_db_chart_name} where consumer='{r[0]}'")
             print(f"{r[0]}所在相关数据条已删除")
 
@@ -107,11 +107,11 @@ def mysql_tip():
                 0) and time_now_org.year == tip_day.year and time_now_org.month == tip_day.month and time_now_org.day >= tip_day.day and time_now_org.day < \
                 r[2].day:
             tip_day_now = r[2].day - time_now_org.day
-            print(tip_day)
+            print(f"{r[0]}的小助手服务还有{tip_day}天到期")
             cursor.execute(f"update {mysql_db_chart_name} set if_tip='1' where consumer='{r[0]}'")
             mail=[f'{r[3]}']
             send_qqEmail(mail,
-                         f"\n您的会议小助手使用期限还有不足{tip_day_now}天即将到期\n起始使用时间：{r[1].year}-{r[1].month}-{r[1].day}\n到期时间：{r[2].year}-{r[2].month}-{r[2].day}\n若需延长使用时间请联系管理员！")
+                         f"\n您的会议小助手使用期限还有不足{tip_day_now}天即将到期\n起始使用时间：{r[1].year}-{r[1].month}-{r[1].day}\n到期时间：{r[2].year}-{r[2].month}-{r[2].day}\n若需延长使用时间请联系管理员,QQ:1010062249！")
 # 返回数据库所有人的邮箱
 def mysql_monitor():
     conn.ping(reconnect=True)
