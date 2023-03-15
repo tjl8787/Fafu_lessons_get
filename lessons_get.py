@@ -71,6 +71,9 @@ def send_qqEmail(to, code):
 
 mysql_db_name = "consumer_test"
 mysql_db_chart_name="test_org"
+mysql_db_chart_name_backups="test_backups"
+mysql_db_chart_name_test="test"
+mysql_db_chart_name_test_backups="copy_test"
 mysql_db_chart_name2 = "test_lessons"
 conn = Connection(
     host='localhost',  # 主机名(ip)
@@ -121,12 +124,21 @@ def mysql_monitor():
     email_list = []
     results: tuple = cursor.fetchall()
     for r in results:
+        get_num=r[5]+1
+        cursor.execute(
+            f"update {mysql_db_chart_name} set get_num='{get_num}' where consumer='{r[0]}'")
+
+        cursor.execute(
+            f"update {mysql_db_chart_name_backups} set get_num='{get_num}' where consumer='{r[0]}'")
         # 将多个字符串类型的邮箱地址依次存储进列表，列表中各元素仍为字符串的写法如下，若只是单个则可参考mysql_insert的写法
         email_list.append(list(r)[3])
         # print(r[4]+"类型"+str(type(r[4])))
     print(f"当前存储邮箱数目为：{len(email_list)}，已作为群发email地址")
     conn.close()
     return email_list
+
+
+
 
 # 该函数负责返回1或0,1为有重复
 def mysql_monitor_lessons(name,time):
@@ -265,8 +277,9 @@ try:
 
                         for i in page:
                             print(f"n为：{n},i为:{i}")
+                            # 测试时可以把报名改成详细信息，记得下面面的n-=1的if语句要注释掉
                             if  re.search("报名", i) is not None:
-                                # 正常情况i值为详细信息，并与n一一对应，但当有可报名会议时，报名也占一个位数，因此要减一
+                                # 正常情况i值为详细信息，并与n一一对应，但当有可报名会议时，报名也占一个位数，因此要减一,测试时可以注释掉
                                 if(n>1):
                                     n-=1
                                 # print("1111111111111")

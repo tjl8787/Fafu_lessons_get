@@ -15,6 +15,9 @@ from pymysql import Connection
 mysql_db_name = "consumer_test"
 mysql_db_chart_name = 'test_org'
 mysql_db_chart_name2 = "test_lessons"
+# 测试用的数据库
+# mysql_db_chart_name = 'test'
+
 conn = Connection(
     host='localhost',  # 主机名(ip)
     port=3306,  # 端口
@@ -36,6 +39,7 @@ InputPwd_self = "Kang.123"
 a = True
 # 整体工作起始时间
 DAY_START = time(7, 00)
+
 DAY_START2= time(21, 00)
 # 整体工作结束时间
 DAY_END = time(8, 00)
@@ -86,8 +90,9 @@ def mysql_judge():
         #     cursor.execute(f"delete from {mysql_db_chart_name} where consumer='{r[0]}'")
         if r[2].year == time_now_org.year and r[2].month == time_now_org.month and r[2].day == time_now_org.day:
             mail=[f'{r[3]}']
+            print(r[5])
             send_qqEmail(mail,
-                         f"您的会议小助手使用期限已到期\n起始使用时间:{r[1].year}-{r[1].month}-{r[1].day}\n到期时间:{r[2].year}-{r[2].month}-{r[2].day}\n若需续用请联系管理员,QQ:1010062249，期待您的下次使用！")
+                         f"来自小助手的自动提醒\n您的会议小助手使用期限已到期\n在{r[1].year}-{r[1].month}-{r[1].day}至{r[2].year}-{r[2].month}-{r[2].day}期间，共为您爬取到【{r[5]}】门会议信息，小助手深知自己依旧有许多不足，会在您的期待与督促下不断完善~\n若需续用请联系管理员,QQ:1010062249\n期待与您再次相见！！！")
             cursor.execute(f"delete from {mysql_db_chart_name} where consumer='{r[0]}'")
             print(f"{r[0]}所在相关数据条已删除")
 
@@ -111,7 +116,7 @@ def mysql_tip():
             cursor.execute(f"update {mysql_db_chart_name} set if_tip='1' where consumer='{r[0]}'")
             mail=[f'{r[3]}']
             send_qqEmail(mail,
-                         f"\n您的会议小助手使用期限还有不足{tip_day_now}天即将到期\n起始使用时间：{r[1].year}-{r[1].month}-{r[1].day}\n到期时间：{r[2].year}-{r[2].month}-{r[2].day}\n若需延长使用时间请联系管理员,QQ:1010062249！")
+                         f"来自小助手的自动提醒\n您的会议小助手使用期限还有不足{tip_day_now}天即将到期\n起始使用时间：{r[1].year}-{r[1].month}-{r[1].day}\n到期时间：{r[2].year}-{r[2].month}-{r[2].day}\n若需咨询可联系管理员,QQ:1010062249！")
 # 返回数据库所有人的邮箱
 def mysql_monitor():
     conn.ping(reconnect=True)
