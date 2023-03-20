@@ -168,7 +168,7 @@ def mysql_monitor_lessons(name,time):
 # 工作起始时间
 DAY_START = time(7, 00)
 # 工作结束时间
-DAY_END = time(23, 59)
+DAY_END = time(23, 30)
 
 # 加班工作起始时间
 DAY_START1 = time(0, 00)
@@ -203,6 +203,8 @@ try:
                 current_time = datetime.now().time()
                 rel_time = time(current_time.hour, current_time.minute)
                 if DAY_START <= rel_time <= DAY_END or DAY_START1 <= rel_time <= DAY_END1:
+
+                    print(rel_time)
                     print("上班啦")
                     # 创建session对象
                     session = requests.Session()
@@ -250,7 +252,7 @@ try:
                     while re.search("若报名不参加，请于报名截止日期前一天退出报名，否则将倒扣学术活动分",
                                     rep) is not None and (
                             DAY_START <= rel_time <= DAY_END or DAY_START1 <= rel_time <= DAY_END1):
-                        # 成功爬取页面时减少一次安全重启次数和session安全建立次数
+                        # 成功爬取页面时减少一次安全重启次数
                         if j >= 1:
                             j -= 1
                         # 成功爬取页面时减少一次session安全建立次数
@@ -276,7 +278,13 @@ try:
                         n = 1
 
                         for i in page:
-                            print(f"n为：{n},i为:{i}")
+                            if n<4 and i!='报名':
+                                context_name = soup.xpath(
+                                    f"/html/body/form/div[@id='mainframeDiv']/div[@id='divContent']/table[@border='1px']/tr[@onmouseover][{n}]/td[1]/text()")
+                                print(f"n为：{n},i为:{i},会议名为：{context_name[0]}")
+
+                            else:
+                                print(f"n为：{n},i为:{i}")
                             # 测试时可以把报名改成详细信息，记得下面面的n-=1的if语句要注释掉
                             if  re.search("报名", i) is not None:
                                 # 正常情况i值为详细信息，并与n一一对应，但当有可报名会议时，报名也占一个位数，因此要减一,测试时可以注释掉
@@ -369,24 +377,33 @@ try:
                             if conn.open:
                                 conn.close()
                             print("搜索冷却cd中")
+
                             # 程序每次爬取的时间间隔
-                            sleep(600)
-                            rep = session.get(url3).content.decode('utf-8')
-                            print("当前已进行%d次搜索，程序运行时间：%0.2f小时" % (num, num * 10 / 60))
-                            num += 1
+                            if DAY_START <= rel_time <= DAY_END:
+                                sleep(600)
+                                rep = session.get(url3).content.decode('utf-8')
+                                num += 1
+                                print("当前已进行%d次搜索，程序运行时间：%0.2f小时" % (num, num * 10 / 60))
+                            elif DAY_START1 <= rel_time <= DAY_END1:
+                                sleep(300)
+                                rep = session.get(url3).content.decode('utf-8')
+                                num += 0.5
+                                print("当前已进行%d次搜索，程序运行时间：%0.2f小时" % (num, num * 10 / 60))
+
+
                             # 当前时间的时和分，类型为datetime
                             current_time = datetime.now().time()
                             rel_time = time(current_time.hour, current_time.minute)
                     if DAY_START <= rel_time <= DAY_END or DAY_START1 <= rel_time <= DAY_END1:
-                        print(f"Session已失效，程序重新建立session,当前session安全建立次数为{k}次")
+                        print(f"Session已失效，程序重新建立session,当前session安全建立次数为{k}次,当前时间为：{rel_time}")
                         print("当前已进行%d次搜索，程序运行时间：%0.2f小时" % (num, num * 10 / 60))
                         num+=1
                         # send_qqEmail(qq_mail,"Session已失效，程序重新建立session，当前已进行%d次搜索，程序运行时间：%0.2f小时"% (num, num * 10 / 60))
 
                 elif current_time > DAY_END1 and b == True:
 
-                    # send_qqEmail(qq_mail,
-                    #          f"已经下班啦,今日下班时间为{rel_time}" )
+                    send_qqEmail(qq_mail,
+                             f"已经下班啦,今日下班时间为{rel_time}" )
                     b = False
                     print(f"已经下班啦,,今日下班时间为{rel_time}")
                     # 当前时间的时和分，类型为datetime
@@ -401,13 +418,16 @@ try:
             # send_qqEmail(qq_mail,
             #              "Session建立失败，程序被迫中断，1小时后尝试自动重启，当前已进行%d次搜索，程序运行时间：%0.2f小时，当前时间为：%s,安全重启次数为：%d次" % (
             #                  num, num * 10 / 60, str(rel_time),safe_line))
-            print(
-                "Session建立失败，程序被迫中断，%d分钟后尝试自动重启，当前已进行%d次搜索，程序运行时间：%0.2f小时，当前时间为：%s,安全重启次数为：%d次" % (
-                sleep_time / 60 * 2, num, str(current_time), str(j), safe_line))
-            sleep(sleep_time)
             b = True
         finally:
-            sleep(sleep_time)
+            if DAY_START <= rel_time <= DAY_END:
+                print(
+                    f"Session建立失败，程序被迫中断，{sleep_time / 60}分钟后尝试自动重启，当前已进行{num}次搜索，程序运行时间：{(num * 10) / 60}小时，当前时间为：{rel_time},安全重启次数为：{j}次")
+                sleep(sleep_time)
+            elif DAY_START1 <= rel_time <= DAY_END1:
+                send_qqEmail(qq_mail,
+                             f"紧急情况\nSession建立失败，程序被迫中断\n{sleep_time / 6/60 }分钟后尝试自动重启\n当前已进行{num}次搜索,程序运行时间：{(num * 10) / 60}小时\n当前时间为：{rel_time}\n安全重启次数为：{j}次\n若无手动操作将于{sleep_time /6/60}分钟后，自动重建session")
+                sleep(sleep_time / 6)
     current_time = datetime.now().time()
     rel_time = time(current_time.hour, current_time.minute)
     send_qqEmail(qq_mail,

@@ -90,7 +90,7 @@ def mysql_judge():
         #     cursor.execute(f"delete from {mysql_db_chart_name} where consumer='{r[0]}'")
         if r[2].year == time_now_org.year and r[2].month == time_now_org.month and r[2].day == time_now_org.day:
             mail=[f'{r[3]}']
-            print(r[5])
+            # print(r[5])
             send_qqEmail(mail,
                          f"来自小助手的自动提醒\n您的会议小助手使用期限已到期\n在{r[1].year}-{r[1].month}-{r[1].day}至{r[2].year}-{r[2].month}-{r[2].day}期间，共为您爬取到【{r[5]}】门会议信息，小助手深知自己依旧有许多不足，会在您的期待与督促下不断完善~\n若需续用请联系管理员,QQ:1010062249\n期待与您再次相见！！！")
             cursor.execute(f"delete from {mysql_db_chart_name} where consumer='{r[0]}'")
