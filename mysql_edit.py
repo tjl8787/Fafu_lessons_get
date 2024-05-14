@@ -44,7 +44,7 @@ qq_mail = "1010062249@qq.com"
 # 群发用户用这个
 email_list = ["1010062249@qq.com"]
 # 写信邮箱的授权码
-smtp_self = "crcvdjrwmbjpbefd"
+smtp_self = ""
 # 管理系统账号密码
 tbxUserID_self = ""
 InputPwd_self = ""
