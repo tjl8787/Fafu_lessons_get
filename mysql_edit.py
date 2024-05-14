@@ -46,8 +46,8 @@ email_list = ["1010062249@qq.com"]
 # 写信邮箱的授权码
 smtp_self = "crcvdjrwmbjpbefd"
 # 管理系统账号密码
-tbxUserID_self = "5221139005"
-InputPwd_self = "Tjl6972658"
+tbxUserID_self = ""
+InputPwd_self = ""
 
 
 def send_qqEmail(to, code):
