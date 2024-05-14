@@ -30,11 +30,11 @@ mail_list_vip = ["1010062249@qq.com", "809465946@qq.com"]
 # 起始发送邮箱
 smtp_mail = "669338120@qq.com"
 # 起始发送邮箱的授权码
-smtp_self = "mtwvnayhbwjnbegi"
-# tbxUserID_self = "1221193002"
-# InputPwd_self = "Qcyg8008208820"
-tbxUserID_self = "5221139012"
-InputPwd_self = "Kang.123"
+smtp_self = ""
+# tbxUserID_self = ""
+# InputPwd_self = ""
+tbxUserID_self = ""
+InputPwd_self = ""
 
 
 # 邮件发送函数
