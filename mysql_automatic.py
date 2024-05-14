@@ -26,15 +26,15 @@ conn = Connection(
     autocommit=True  # 设置自动提交
 )
 # 写信邮箱的授权码
-smtp_self = "crcvdjrwmbjpbefd"
+smtp_self = ""
 # 管理系统账号密码
-tbxUserID_self = "5221139005"
-InputPwd_self = "Tjl6972658"
+tbxUserID_self = ""
+InputPwd_self = ""
 # 发送给单个用户用这个
 qq_mail = "1010062249@qq.com"
 set_tip_day=3
-tbxUserID_self = "5221139012"
-InputPwd_self = "Kang.123"
+tbxUserID_self = ""
+InputPwd_self = ""
 
 a = True
 # 整体工作起始时间
