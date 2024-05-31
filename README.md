@@ -1,4 +1,4 @@
-# Fafu_lessons_get(个人项目可看person_program分支)
+# Fafu_lessons_get(个人项目可看person_project分支)
 **只作学习之用** 
 ---------------
 当前5.1版本共三个模块：
