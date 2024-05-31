@@ -44,24 +44,54 @@ qq_mail = "1010062249@qq.com"
 # 群发用户用这个
 email_list = ["1010062249@qq.com"]
 # 写信邮箱的授权码
-smtp_self = ""
+smtp_self = "pmkonllcsdzkbaid"
+smtp_mail="669338120@qq.com"
 # 管理系统账号密码
-tbxUserID_self = ""
-InputPwd_self = ""
+tbxUserID_self = "5221139005"
+InputPwd_self = "Tjl6972658"
 
 
+# def send_qqEmail(to, code):
+#     mail_address = "smtp.qq.com"
+#     mail_port = "25"
+#     mail_user = "669338120@qq.com"
+#     mail_pass = smtp_self
+#
+#     from_address = mail_user
+#     # to_address = ",".join(to)
+#     msg = MIMEText('当前检测到: ' + code, 'plain', 'utf-8')
+#
+#     msg['From'] = "学术会议小助手"
+#     msg['To'] = ",".join(to)
+#     subject = "学术会议信息提示"
+#     msg['Subject'] = Header(subject, 'utf-8')
+#
+#     try:
+#         smtp = smtplib.SMTP()
+#         smtp.connect(mail_address, mail_port)
+#         smtp.login(mail_user, mail_pass)
+#         # smtp.send_message(msg, from_address, to_address)
+#         smtp.sendmail(from_address, to, str(msg))
+#         smtp.quit()
+#     except smtplib.SMTPException as e:
+#         print(e)
+#         return False
+#     return True
 def send_qqEmail(to, code):
     mail_address = "smtp.qq.com"
     mail_port = "25"
-    mail_user = "669338120@qq.com"
+    mail_user = smtp_mail
     mail_pass = smtp_self
 
     from_address = mail_user
-    # to_address = ",".join(to)
+    to_address = to
     msg = MIMEText('当前检测到: ' + code, 'plain', 'utf-8')
+    # msg['From'] = "学术会议小助手"
+    msg['From'] = '"=?utf-8?B?5a2m5pyv5Lya6K6u5bCP5Yqp5omL?="<669338120@qq.com>'
 
-    msg['From'] = "学术会议小助手"
-    msg['To'] = ",".join(to)
+    # 群发时要和sendmail函数中的发送地址保持一个是列表一个是字符串的区别
+    msg['To'] = ",".join(to_address)
+
     subject = "学术会议信息提示"
     msg['Subject'] = Header(subject, 'utf-8')
 
@@ -70,13 +100,15 @@ def send_qqEmail(to, code):
         smtp.connect(mail_address, mail_port)
         smtp.login(mail_user, mail_pass)
         # smtp.send_message(msg, from_address, to_address)
+        # 这里一定要注意msg要是字符串类型
+        # print("1234545")
         smtp.sendmail(from_address, to, str(msg))
+        # print("1234545")
         smtp.quit()
     except smtplib.SMTPException as e:
         print(e)
         return False
     return True
-
 
 # 该函数可以增添新用户
 def mysql_insert(insert_name, mail, day_num):
@@ -155,10 +187,10 @@ def mysql_judge():
         # print(r[2].day)
         # if r[2].year==t2ime_now_org.year and r[2].month==time_now_org.month and r[2].day==time_now_org.day and r[2].hour==time_now_org.hour:
         #     cursor.execute(f"delete from {mysql_db_chart_name} where consumer='{r[0]}'")
-        if r[2].year == time_now_org.year and r[2].month == time_now_org.month and r[2].day == time_now_org.day:
+        if r[2].year == time_now_org.year and ((r[2].month == time_now_org.month and r[2].day >= time_now_org.day) or(r[2].month > time_now_org.month )):
             mail=[f'{r[3]}']
             send_qqEmail(mail,
-                         f"您的会议小助手使用期限已到期\n起始使用时间:{r[1].year}-{r[1].month}-{r[1].day}\n到期时间:{r[2].year}-{r[2].month}-{r[2].day}\n若需续费请联系管理员，期待您的下次使用！")
+                         f"您的会议小助手使用期限已到期\n起始使用时间:{r[1].year}-{r[1].month}-{r[1].day}\n到期时间:{r[2].year}-{r[2].month}-{r[2].day}\n期间小助手共为您捕获{r[5]}只野生会议\n若需续用请频道私信或联系管理员:qq1010062249，期待您的下次使用！")
             cursor.execute(f"delete from {mysql_db_chart_name} where consumer='{r[0]}'")
             print(f"{r[0]}所在相关数据条已删除")
 
@@ -184,7 +216,7 @@ def mysql_tip():
             cursor.execute(f"update {mysql_db_chart_name} set if_tip='1' where consumer='{r[0]}'")
             mail=[f'{r[3]}']
             send_qqEmail(mail,
-                         f"\n您的会议小助手使用期限还有不足{tip_day_now}天即将到期\n起始使用时间：{r[1].year}-{r[1].month}-{r[1].day}\n到期时间：{r[2].year}-{r[2].month}-{r[2].day}\n若需延长使用时间请联系管理员！")
+                         f"\n您的会议小助手使用期限还有不足{tip_day_now}天即将到期\n起始使用时间：{r[1].year}-{r[1].month}-{r[1].day}\n到期时间：{r[2].year}-{r[2].month}-{r[2].day}\n期间，小助手共为您捕获{r[5]}只野生会议\n若需延长使用时间，请频道私信或联系管理员:qq1010062249！")
 
 
 # 该函数可以更新用户使用期限
